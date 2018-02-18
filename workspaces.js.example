@@ -1,0 +1,39 @@
+/*
+cmd:              Command used top open app"
+pos:              Position to place the app window ([0-8])"
+screen:           Screen number to place the app window"
+windowDesktop:    (optional) Desktop number to place the app window (can also be 'current' or 'any')"
+windowClass:      Window class (used to detect window)"
+windowName:       (optional) Window class (used to detect window)"
+identifyRetry:    (optional) Number of retries when a window is not dected"
+identifyInterval: (optional) Wait interval between each retry
+*/
+
+module.exports = {
+    scripts: atomApp('<path>')
+}
+
+function atomApp(path) {
+    return {
+        apps: [
+            {
+                cmd: `terminator --working-directory "${path}"`,
+                pos: 0,
+                screen: 0,
+                windowClass: 'terminator\\.Terminator'
+            },
+            {
+                cmd: `dolphin "${path}"`,
+                pos: 6,
+                screen: 0,
+                windowClass: 'dolphin\\.dolphin'
+            },
+            {
+                cmd: `atom -n "${path}"`,
+                pos: 5,
+                screen: 0,
+                windowClass: 'atom\\.Atom'
+            }
+        ]
+    }
+}

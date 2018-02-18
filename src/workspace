@@ -1,0 +1,67 @@
+#!/bin/bash
+
+function printHelp() {
+    cat << EOF
+
+    Open and (re)position all windows of a given workspace.
+
+    `echoGreen Usage:` ${PROGNAME} apply `echoBlue [workspace]`
+
+        $(echoBlue workspace): Name or index of the workspace (or empty to use an interactive dialog)
+
+    List all available workspaces.
+
+    `echoGreen Usage:` ${PROGNAME} list
+
+    Open workspaces configuration file ($CONFIG)
+
+    `echoGreen Usage:` ${PROGNAME} config
+EOF
+}
+
+function declareConstants() {
+    $1 NODE_SCRIPT "__ROOT__/js/workspace.js"
+    $1 CONFIG "__ROOT__/../workspaces.js"
+}
+
+function loadOptions() {
+    # unusedBehaviour="IGNORE"
+    getOpt "-i" interactive
+    return 0
+}
+
+function apply() {
+    if [ $# -eq 0 ]; then
+        config=$(kdialog --menu "Select" `list`)
+        test -n "$config" || return
+    else
+        config="$1"
+    fi
+
+    WINDOW_SCRIPTS="__ROOT__/window" node "$NODE_SCRIPT" "$CONFIG" apply "$config"
+}
+
+function list() {
+    WINDOW_SCRIPTS="__ROOT__/window" node "$NODE_SCRIPT" "$CONFIG" list
+}
+
+function config() {
+    xdg-open "$CONFIG"
+}
+
+function run () {
+    hasMoreArgs $#
+
+    test -f "$CONFIG" || error "Config file not found: $CONFIG"
+
+    local cmds=(apply list config)
+    local cmd="$1"
+    if ! arrayContains "$cmd" "${cmds[@]}"; then
+        error "Unknown command $cmd"
+    fi
+
+    shift
+    $cmd "$@"
+}
+
+source "__STARTER__@v1"

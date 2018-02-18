@@ -1,0 +1,10 @@
+{
+    "main": "workspace",
+    "files": [
+        {
+            "name": "scripts-workspace",
+            "output": "workspaces.js"
+        }
+    ],
+    "postInstall": "cd dist/js && npm install"
+}

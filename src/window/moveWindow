@@ -1,0 +1,117 @@
+#!/bin/bash
+
+function getStatus() {
+	xrandr --current | grep -P "$1"
+}
+
+function getScreenInfo() {
+	# local regex="^(.+) connected ([0-9]+).([0-9]+)\+([0-9]+)\+([0-9]+) .*"
+    local status
+    status=`getStatus "$1"`
+    if [ $? -ne 0 ]; then
+        return 1
+    fi
+
+	[[ $status =~ $1 ]] || return 1
+
+	name="${BASH_REMATCH[1]}"
+	width="${BASH_REMATCH[2]}"
+	height="${BASH_REMATCH[3]}"
+	posX="${BASH_REMATCH[4]}"
+	posY="${BASH_REMATCH[5]}"
+}
+
+
+if [ $# -ne 3 ] && [ $# -ne 4 ]; then
+    echo "Usage: moveWindow <ID> <POS> <SCREEN> </DESKTOP>"
+    exit 1
+fi
+
+
+readonly secondaryScreenRegex="^(.+) connected ([0-9]+).([0-9]+)\+([0-9]+)\+([0-9]+) .*"
+readonly primaryScreenRegex="^(.+) connected primary ([0-9]+).([0-9]+)\+([0-9]+)\+([0-9]+) .*"
+
+windowId="$1"
+windowPos="$2"
+windowScreen="$3"
+windowDesktop="${4:-}"
+
+if [ "$windowScreen" -eq 0 ]; then
+    getScreenInfo "$primaryScreenRegex"
+elif [ "$windowScreen" -eq 1 ]; then
+    getScreenInfo "$secondaryScreenRegex" || getScreenInfo "$primaryScreenRegex"
+else
+    echo 'Only primary/secondary screens are implemented'
+    exit 1
+fi
+
+case $windowPos in
+    '0' )
+        x=$posX
+        y=$posY
+        w=$((width/2))
+        h=$((height/2))
+        ;;
+    '1' )
+        x=$posX
+        y=$posY
+        w=$width
+        h=$((height/2))
+        ;;
+    '2' )
+        x=$((posX + width/2))
+        y=$posY
+        w=$((width/2))
+        h=$((height/2))
+        ;;
+    '3' )
+        x=$posX
+        y=$posY
+        w=$((width/2))
+        h=$height
+        ;;
+    '4' )
+        x=$posX
+        y=$posY
+        w=$width
+        h=$height
+        ;;
+    '5' )
+        x=$((posX + width/2))
+        y=$posY
+        w=$((width/2))
+        h=$height
+        ;;
+    '6' )
+        x=$posX
+        y=$((posY + height/2))
+        w=$((width/2))
+        h=$((height/2))
+        ;;
+    '7' )
+        x=$posX
+        y=$((posY + height/2))
+        w=$width
+        h=$((height/2))
+        ;;
+    '8' )
+        x=$((posX + width/2))
+        y=$((posY + height/2))
+        w=$((width/2))
+        h=$((height/2))
+        ;;
+    * )
+    echo 'Invalid position'
+    exit 1
+    ;;
+esac
+
+if [ ! -z $windowDesktop ]; then
+	wmctrl -i -r $windowId -t $windowDesktop
+fi
+
+wmctrl -i -r $windowId -e "0,$x,$y,$w,$h"
+wmctrl -i -r $windowId -b "add,maximized_vert,maximized_horz"
+wmctrl -i -r $windowId -b "remove,maximized_vert,maximized_horz"
+# wmctrl -i -r $windowId -b "add,sticky"
+wmctrl -i -r $windowId -e "0,$x,$y,$w,$h"
