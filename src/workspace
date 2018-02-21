@@ -38,11 +38,11 @@ function apply() {
         config="$1"
     fi
 
-    WINDOW_SCRIPTS="__ROOT__/window" node "$NODE_SCRIPT" "$CONFIG" apply "$config"
+    WINDOW_SCRIPTS="__ROOT__/window/" node "$NODE_SCRIPT" "$CONFIG" apply "$config"
 }
 
 function list() {
-    WINDOW_SCRIPTS="__ROOT__/window" node "$NODE_SCRIPT" "$CONFIG" list
+    WINDOW_SCRIPTS="__ROOT__/window/" node "$NODE_SCRIPT" "$CONFIG" list
 }
 
 function config() {
