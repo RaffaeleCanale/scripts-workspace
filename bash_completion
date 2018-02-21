@@ -12,7 +12,7 @@ __workspace()
             COMPREPLY=( $(compgen -W "${modes}" -- ${cur}) )
             ;;
         "apply" )
-            COMPREPLY=( $(compgen -W "$(workspace list)" -- ${cur}) )
+            COMPREPLY=( $(compgen -W "$(workspace list_raw)" -- ${cur}) )
             ;;
         # * )
         #     ;;

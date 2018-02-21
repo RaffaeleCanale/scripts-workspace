@@ -99,6 +99,8 @@ switch (mode) {
         const config = parseConfigFile()
         return printArray(Object.keys(config)
                 .map(w => workspaceToString(w, config[w])))
+    case 'list_raw':
+        return printArray(Object.keys(parseConfigFile()))
     case 'apply':
         const workspace = findWorkspace(name)
         if (!workspace) return console.error('Workspace not found')

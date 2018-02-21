@@ -45,6 +45,10 @@ function list() {
     WINDOW_SCRIPTS="__ROOT__/window/" node "$NODE_SCRIPT" "$CONFIG" list
 }
 
+function list_raw() {
+    WINDOW_SCRIPTS="__ROOT__/window/" node "$NODE_SCRIPT" "$CONFIG" list_raw
+}
+
 function config() {
     xdg-open "$CONFIG"
 }
@@ -54,7 +58,7 @@ function run () {
 
     test -f "$CONFIG" || error "Config file not found: $CONFIG"
 
-    local cmds=(apply list config)
+    local cmds=(apply list config list_raw)
     local cmd="$1"
     if ! arrayContains "$cmd" "${cmds[@]}"; then
         error "Unknown command $cmd"
